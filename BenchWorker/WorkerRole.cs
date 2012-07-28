@@ -15,6 +15,11 @@ namespace WorkerRole1
 
     public class WorkerRole : RoleEntryPoint
     {
+        public WorkerRole()
+        {
+            EnableWad();
+        }
+
         public override void Run()
         {
             // This is a sample worker implementation. Replace with your logic.
@@ -28,8 +33,18 @@ namespace WorkerRole1
         {
             // allow for enough parallel connections to XStore
             ServicePointManager.DefaultConnectionLimit = 64;
+            // StorageClient lib is authenticating correctly, no need for extra roundtrip on PUT/POST
+            ServicePointManager.Expect100Continue = false;
 
             return base.OnStart();
+        }
+
+        void EnableWad()
+        {
+            DiagnosticMonitorConfiguration dmc = DiagnosticMonitor.GetDefaultInitialConfiguration();
+            dmc.Logs.ScheduledTransferPeriod = TimeSpan.FromMinutes(2);
+            dmc.Logs.ScheduledTransferLogLevelFilter = LogLevel.Verbose;
+            DiagnosticMonitor.Start("Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString", dmc);
         }
     }
 }

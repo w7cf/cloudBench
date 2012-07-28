@@ -38,6 +38,10 @@ namespace WorkerRole1
             while (true)
             {
                 Trace.TraceInformation("Start experiment batch '{0}' at {1}", count++, DateTime.UtcNow);
+                BenchmarkMonitor monitor = new BenchmarkMonitor();
+                monitor.Start();
+                Thread.Sleep(30000);
+                monitor.Stop();
                 
                 XBlobExperiments experiment = new XBlobExperiments(this.benchmarkAccount.CreateCloudBlobClient(), 1, 10, 100 * 1024);
                 

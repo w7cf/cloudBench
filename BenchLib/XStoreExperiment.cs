@@ -26,6 +26,7 @@ namespace BenchLib
             this.requestOptions = new BlobRequestOptions
             {
                 RetryPolicy = TrackedPolicy,
+                Timeout = TimeSpan.FromMinutes(5),
             };
         }
 
@@ -42,7 +43,7 @@ namespace BenchLib
         bool RetryTracker(int retryCount, Exception lastException, out TimeSpan delay)
         {
             ++TotalRetries;
-            delay = new TimeSpan(0, 0, retryCount * 10);
+            delay = TimeSpan.FromSeconds(retryCount * 10);
             return retryCount < 5;
         }
     }

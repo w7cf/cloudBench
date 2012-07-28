@@ -26,7 +26,7 @@ namespace WorkerRole1
         {
             //this.client = client;
             this.testDataSource = new RandomTestData(minSizeOfBlob);
-            RoleName = RoleEnvironment.CurrentRoleInstance.Role.Name + "_" + RoleEnvironment.CurrentRoleInstance.Id;
+            RoleName = RoleEnvironment.CurrentRoleInstance.Id;
             for (int i = 0; i < numOfThreads; i++)
             {
                 this.experiments.Add(new UploadBlobs(RoleName, client, requestedIterations, minSizeOfBlob, this.testDataSource));
@@ -41,7 +41,7 @@ namespace WorkerRole1
                 experiment.Start();
                 waitHandles.Add(experiment.WaitHandle);
             }
-            bool finishedInTime = WaitHandle.WaitAll(waitHandles.ToArray(), new TimeSpan(0, 60, 0));
+            bool finishedInTime = WaitHandle.WaitAll(waitHandles.ToArray(), TimeSpan.FromMinutes(60));
             List<ExperimentResult> results = new List<ExperimentResult>();
             foreach (XStoreExperiment experiment in this.experiments)
             {
@@ -58,7 +58,7 @@ namespace WorkerRole1
             public UploadBlobs(string roleName, CloudBlobClient client, int requestedIterations, int minSizeOfBlob, RandomTestData testDataSource)
                 : base(roleName, client, "Upload blobs", requestedIterations)
             {
-                this.container = this.client.GetContainerReference(Path.GetRandomFileName());
+                this.container = this.client.GetContainerReference(Path.GetFileNameWithoutExtension(Path.GetRandomFileName()).ToLowerInvariant());
                 this.testDataSource = testDataSource;
             }
 
@@ -71,7 +71,8 @@ namespace WorkerRole1
             {
                 CloudBlob blob = this.container.GetBlobReference(Path.GetRandomFileName());
                 byte[] testData = this.testDataSource.GetData();
-                blob.UploadByteArray(testData);
+                blob.Properties.ContentType = "application/octet";
+                blob.UploadByteArray(testData, requestOptions);
                 return testData.Length;
             }
 

@@ -56,7 +56,7 @@ using System.Threading;
 
         public bool WaitForCompletion()
         {
-            return WaitForCompletion(new TimeSpan(-1 * 10000));    // -1 msec -> infinite time out
+            return WaitForCompletion(TimeSpan.FromMilliseconds(-1));    // -1 msec -> infinite time out
         }
 
         public bool WaitForCompletion(TimeSpan timeout)

@@ -1,5 +1,7 @@
 bin/
 obj/
+csx/
 *.suo
 packages/
 *.user
+*.build.csdef

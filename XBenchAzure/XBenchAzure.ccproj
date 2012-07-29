@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>1.3.0</ProductVersion>
-    <ProjectGuid>{0fe582d5-9898-4321-9c02-a56dac3f9055}</ProjectGuid>
+    <ProductVersion>1.7</ProductVersion>
+    <ProjectGuid>{ee221a2e-ce11-4f99-8f7e-7bd0938eafbd}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>XBenchAzure</RootNamespace>
@@ -32,27 +33,31 @@
   <!-- Items for the project -->
   <ItemGroup>
     <ServiceDefinition Include="ServiceDefinition.csdef" />
-    <ServiceConfiguration Include="ServiceConfiguration.cscfg" />
+    <ServiceConfiguration Include="ServiceConfiguration.Local.cscfg" />
+    <ServiceConfiguration Include="ServiceConfiguration.Cloud.cscfg" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BenchWorker\BenchWorker.csproj">
       <Name>BenchWorker</Name>
-      <Project>{5c731949-cdd6-4e16-a3d9-de190a204fe9}</Project>
+      <Project>{d8aa3442-2595-4b0c-80a2-cc2ce0a7a6f0}</Project>
       <Private>True</Private>
       <RoleType>Worker</RoleType>
       <RoleName>BenchWorker</RoleName>
+      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
     </ProjectReference>
     <ProjectReference Include="..\XBenchWeb\XBenchWeb.csproj">
       <Name>XBenchWeb</Name>
-      <Project>{66b8dc1e-efd3-4dbe-bf17-4134f8dfdf5c}</Project>
+      <Project>{bd3c3e9e-2880-4581-8c48-06275587bd93}</Project>
       <Private>True</Private>
       <RoleType>Web</RoleType>
       <RoleName>XBenchWeb</RoleName>
+      <UpdateDiagnosticsConnectionStringOnPublish>True</UpdateDiagnosticsConnectionStringOnPublish>
     </ProjectReference>
   </ItemGroup>
   <!-- Import the target files for this project template -->
   <PropertyGroup>
-    <CloudExtensionsDir Condition=" '$(CloudExtensionsDir)' == '' ">$(MSBuildExtensionsPath)\Microsoft\Cloud Service\1.0\Visual Studio 10.0\</CloudExtensionsDir>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+    <CloudExtensionsDir Condition=" '$(CloudExtensionsDir)' == '' ">$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Windows Azure Tools\1.7\</CloudExtensionsDir>
   </PropertyGroup>
-  <Import Project="$(CloudExtensionsDir)Microsoft.CloudService.targets" />
+  <Import Project="$(CloudExtensionsDir)Microsoft.WindowsAzure.targets" />
 </Project>

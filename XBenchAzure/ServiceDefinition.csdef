@@ -1,15 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ServiceDefinition name="XBenchAzure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition">
-  <WorkerRole name="BenchWorker">
-    <Imports>
-      <Import moduleName="Diagnostics" />
-    </Imports>
-    <ConfigurationSettings>
-      <Setting name="BenchmarkStorage" />
-      <Setting name="ReportStorage" />
-    </ConfigurationSettings>
-  </WorkerRole>
-  <WebRole name="XBenchWeb">
+<ServiceDefinition name="XBenchAzure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2012-05.1.7">
+  <WebRole name="XBenchWeb" vmsize="Small">
     <Sites>
       <Site name="Web">
         <Bindings>
@@ -23,5 +14,16 @@
     <Imports>
       <Import moduleName="Diagnostics" />
     </Imports>
+    <ConfigurationSettings>
+    </ConfigurationSettings>
   </WebRole>
+  <WorkerRole name="BenchWorker" vmsize="Small">
+    <Imports>
+      <Import moduleName="Diagnostics" />
+    </Imports>
+    <ConfigurationSettings>
+      <Setting name="ReportStorage" />
+      <Setting name="BenchmarkStorage" />
+    </ConfigurationSettings>
+  </WorkerRole>
 </ServiceDefinition>

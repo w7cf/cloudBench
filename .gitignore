@@ -1,7 +1,8 @@
 bin/
 obj/
 csx/
-*.suo
 packages/
+TestResults/
+*.suo
 *.user
 *.build.csdef

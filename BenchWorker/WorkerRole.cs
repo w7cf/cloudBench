@@ -26,7 +26,7 @@ namespace WorkerRole1
             Trace.WriteLine("WorkerRole1 entry point called", "Information");
 
             ExperimentRunner runner = new ExperimentRunner();
-            runner.Start();
+            //runner.Start();
         }
 
         public override bool OnStart()

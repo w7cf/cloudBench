@@ -43,6 +43,7 @@ using System.Threading;
             this.thread = new Thread(RunCore);
             this.thread.Name = "Experiment: " + Title;
             this.thread.Start();
+            this.isRunning = true;
         }
 
         public void Cancel()
@@ -72,7 +73,6 @@ using System.Threading;
 
         void RunCore()
         {
-            this.isRunning = true;
             Stopwatch totalDuration = new Stopwatch();
             Stopwatch netDuration = new Stopwatch();
             DateTime started = DateTime.UtcNow;
@@ -106,7 +106,7 @@ using System.Threading;
             }
             finally
             {
-                this.isRunning = true;
+                this.isRunning = false;
                 this.result = result;
                 this.hasFinished.Set();
             }

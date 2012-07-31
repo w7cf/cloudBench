@@ -11,6 +11,7 @@ using System.Threading;
 
     public abstract class Experiment
     {
+        readonly Guid experimentId;
         readonly int requestedIterations;
         readonly ManualResetEvent requestCancel = new ManualResetEvent(false);
         readonly ManualResetEvent hasFinished = new ManualResetEvent(false);
@@ -27,8 +28,9 @@ using System.Threading;
         public WaitHandle WaitHandle { get { return this.hasFinished; } }
 
 
-        public Experiment(string title, int requestedIterations)
+        public Experiment(Guid experimentId, string title, int requestedIterations)
         {
+            this.experimentId = experimentId;
             this.title = title;
             this.requestedIterations = requestedIterations;
         }
@@ -96,13 +98,33 @@ using System.Threading;
                 }
                 totalDuration.Stop();
                 CleanupExperiment();
-                result = new ExperimentResult(Title, true, started, totalDuration.Elapsed, netDuration.Elapsed, currentIteration, accumulatedMetric, string.Empty);
+                result = new ExperimentResult(this.experimentId, Title) {
+                    Title = Title,
+                    Success = true, 
+                    Started = started, 
+                    TotalDuration = totalDuration.Elapsed, 
+                    NetDuration = netDuration.Elapsed,
+                    CompletedIterations = currentIteration, 
+                    AccumulatedMetric = accumulatedMetric, 
+                    Error = string.Empty,
+                };
             }
             catch (Exception ex)
             {
                 netDuration.Stop();
                 totalDuration.Stop();
-                result = new ExperimentResult(Title, false, started, totalDuration.Elapsed, netDuration.Elapsed, currentIteration, accumulatedMetric, WriteException(ex));
+                result = new ExperimentResult(this.experimentId, Title)
+                {
+                    Title = Title,
+                    Success = false,
+                    Started = started,
+                    TotalDuration = totalDuration.Elapsed,
+                    NetDuration = netDuration.Elapsed,
+                    CompletedIterations = currentIteration,
+                    AccumulatedMetric = accumulatedMetric,
+                    Error = WriteException(ex),
+                };
+
             }
             finally
             {

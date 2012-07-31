@@ -12,11 +12,19 @@ namespace LibTests
     [TestClass]
     public class ExperimentTest
     {
+        enum Step
+        {
+            PrepareExperiment,
+            PrepareIteration,
+            RunSingleIteration,
+            CleanupIteration,
+            CleanupExperiment,
+        }
 
         [TestMethod]
         public void HasCorrectStatus()
         {
-            List<ExperimentStep> tracker = new List<ExperimentStep>();
+            List<Step> tracker = new List<Step>();
             MockExperiment experiment = new MockExperiment(tracker, "HasCorrectStatus", 1,
                 (i) => 
                 {
@@ -41,7 +49,7 @@ namespace LibTests
         [TestMethod]
         public void HasValidResult()
         {
-            List<ExperimentStep> tracker = new List<ExperimentStep>();
+            List<Step> tracker = new List<Step>();
             MockExperiment experiment = new MockExperiment(tracker, "HasValidResult", 2,
                 (i) =>
                 {
@@ -78,7 +86,7 @@ namespace LibTests
         {
             const string failureMessage = "Intentional experiment failure";
 
-            List<ExperimentStep> tracker = new List<ExperimentStep>();
+            List<Step> tracker = new List<Step>();
             MockExperiment experiment = new MockExperiment(tracker, "ExperimentHasRightOrderingOfSteps", 1,
                 (i) =>
                 {
@@ -101,34 +109,34 @@ namespace LibTests
         [TestMethod]
         public void HasRightOrderingOfSteps()
         {
-            List<ExperimentStep> tracker = new List<ExperimentStep>();
+            List<Step> tracker = new List<Step>();
             MockExperiment experiment = new MockExperiment(tracker, "ExperimentWithException", 2);
 
             experiment.Start();
             Assert.IsTrue(experiment.WaitForCompletion(TimeSpan.FromSeconds(20)), "experiment timed out");
 
             AssertTracker(tracker, 
-                new ExperimentStep[] 
+                new Step[] 
                 { 
-                    ExperimentStep.PrepareExperiment, 
-                    ExperimentStep.PrepareIteration, 
-                    ExperimentStep.RunSingleIteration, 
-                    ExperimentStep.CleanupIteration, 
-                    ExperimentStep.PrepareIteration, 
-                    ExperimentStep.RunSingleIteration, 
-                    ExperimentStep.CleanupIteration, 
-                    ExperimentStep.CleanupExperiment,
+                    Step.PrepareExperiment, 
+                    Step.PrepareIteration, 
+                    Step.RunSingleIteration, 
+                    Step.CleanupIteration, 
+                    Step.PrepareIteration, 
+                    Step.RunSingleIteration, 
+                    Step.CleanupIteration, 
+                    Step.CleanupExperiment,
                 });
         }
 
-        void AssertTracker(IEnumerable<ExperimentStep> actual, IEnumerable<ExperimentStep> expected)
+        void AssertTracker(IEnumerable<Step> actual, IEnumerable<Step> expected)
         {
             int expectedLength = expected.Count();
             int actualLength = actual.Count();
 
             int shortestLength = Math.Min(expectedLength, actualLength);
-            IEnumerator<ExperimentStep> expectedEnum = expected.GetEnumerator();
-            IEnumerator<ExperimentStep> actualEnum = actual.GetEnumerator();
+            IEnumerator<Step> expectedEnum = expected.GetEnumerator();
+            IEnumerator<Step> actualEnum = actual.GetEnumerator();
 
             for (int i = 0; i < shortestLength; i++)
             {
@@ -141,22 +149,13 @@ namespace LibTests
                 string.Format("expected and actual should have same length: expectedLength={0}, actualLength={1}", expectedLength, actualLength));
         }
 
-        enum ExperimentStep
-        {
-            PrepareExperiment,
-            PrepareIteration,
-            RunSingleIteration,
-            CleanupIteration,
-            CleanupExperiment,
-        }
-
         class MockExperiment : Experiment
         {
-            List<ExperimentStep> tracker;
+            List<Step> tracker;
             Func<int, double> iteration;
 
-            public MockExperiment(List<ExperimentStep> tracker, string title, int requestedIterations, Func<int,double> iteration = null)
-                : base(title, requestedIterations)
+            public MockExperiment(List<Step> tracker, string title, int requestedIterations, Func<int,double> iteration = null)
+                : base(Guid.NewGuid(), title, requestedIterations)
             {
                 this.tracker = tracker;
                 this.iteration = iteration;
@@ -164,7 +163,7 @@ namespace LibTests
 
             protected override double RunSingleIteration(int currentIteration)
             {
-                this.tracker.Add(ExperimentStep.RunSingleIteration);
+                this.tracker.Add(Step.RunSingleIteration);
                 if (this.iteration != null)
                 {
                     return this.iteration(currentIteration);
@@ -174,22 +173,22 @@ namespace LibTests
 
             protected override void PrepareExperiment()
             {
-                this.tracker.Add(ExperimentStep.PrepareExperiment);
+                this.tracker.Add(Step.PrepareExperiment);
             }
 
             protected override void PrepareIteration(int currentIteration)
             {
-                this.tracker.Add(ExperimentStep.PrepareIteration);
+                this.tracker.Add(Step.PrepareIteration);
             }
 
             protected override void CleanupIteration(int currentIteration)
             {
-                this.tracker.Add(ExperimentStep.CleanupIteration);
+                this.tracker.Add(Step.CleanupIteration);
             }
 
             protected override void CleanupExperiment()
             {
-                this.tracker.Add(ExperimentStep.CleanupExperiment);
+                this.tracker.Add(Step.CleanupExperiment);
             }
         }
     }

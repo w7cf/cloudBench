@@ -5,38 +5,23 @@ namespace BenchLib
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using Microsoft.WindowsAzure.StorageClient;
 
-    public class ExperimentResult
+    public class ExperimentResult : TableServiceEntity
     {
-        readonly string title;
-        readonly bool success;
-        readonly DateTime started;
-        readonly TimeSpan totalDuration;
-        readonly TimeSpan netDuration;
-        readonly int completedIterations;
-        readonly double accumulatedMetric;
-        readonly string error;
+        public string InstanceId { get { return PartitionKey; } }
+        public string Title { get; set; }
+        public bool Success { get; set; }
+        public DateTime Started { get; set; }
+        public TimeSpan TotalDuration { get; set; }
+        public TimeSpan NetDuration { get; set; }
+        public int CompletedIterations { get; set; }
+        public double AccumulatedMetric { get; set; }
+        public string Error { get; set; }
 
-        public string Title { get { return this.title; } }
-        public bool Success { get { return this.success; } }
-        public DateTime Started { get { return this.started; } }
-        public TimeSpan TotalDuration { get { return this.totalDuration; } }
-        public TimeSpan NetDuration { get { return this.netDuration; } }
-        public int CompletedIterations { get { return this.completedIterations; } }
-        public double AccumulatedMetric { get { return this.accumulatedMetric; } }
-        public string Error { get { return this.error; } }
-
-        public ExperimentResult(string title, bool success, DateTime started, TimeSpan totalDuration, TimeSpan netDuration, int completedIterations, double accumulatedMetric, string error)
+        public ExperimentResult(Guid experimentId, string instanceId)
+            : base(instanceId, experimentId.ToString())
         {
-            this.title = title;
-            this.success = success;
-            this.started = started;
-            this.totalDuration = totalDuration;
-            this.netDuration = netDuration;
-            this.completedIterations = completedIterations;
-            this.accumulatedMetric = accumulatedMetric;
-            this.error = error;
         }
-
     }
 }

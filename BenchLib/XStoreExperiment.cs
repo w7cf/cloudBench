@@ -18,8 +18,8 @@ namespace BenchLib
         protected readonly BlobRequestOptions requestOptions;
         public int TotalRetries { get; private set; }
 
-        public XStoreExperiment(string roleName, CloudBlobClient client, string title, int requestedIterations)
-            : base(title, requestedIterations)
+        public XStoreExperiment(Guid experimentId, string roleName, CloudBlobClient client, string title, int requestedIterations)
+            : base(experimentId, title, requestedIterations)
         {
             this.roleName = roleName;
             this.client = client;

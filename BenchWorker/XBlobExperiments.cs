@@ -15,21 +15,21 @@ namespace WorkerRole1
 
     class XBlobExperiments
     {
-        //readonly CloudBlobClient client;
-        List<XStoreExperiment> experiments = new List<XStoreExperiment>();
+        readonly Guid experimentId;
         readonly RandomTestData testDataSource;
+        List<XStoreExperiment> experiments = new List<XStoreExperiment>();
         List<string> testFiles = new List<string>();
 
         public string RoleName { get; private set; }
 
-        public XBlobExperiments(CloudBlobClient client, int numOfThreads, int requestedIterations, int minSizeOfBlob)
+        public XBlobExperiments(Guid experimentId, CloudBlobClient client, int numOfThreads, int requestedIterations, int minSizeOfBlob)
         {
-            //this.client = client;
+            this.experimentId = experimentId;
             this.testDataSource = new RandomTestData(minSizeOfBlob);
             RoleName = RoleEnvironment.CurrentRoleInstance.Id;
             for (int i = 0; i < numOfThreads; i++)
             {
-                this.experiments.Add(new UploadBlobs(RoleName, client, requestedIterations, minSizeOfBlob, this.testDataSource));
+                this.experiments.Add(new UploadBlobs(experimentId, RoleName, client, requestedIterations, minSizeOfBlob, this.testDataSource));
             }
         }
 
@@ -55,8 +55,8 @@ namespace WorkerRole1
             readonly CloudBlobContainer container;
             readonly RandomTestData testDataSource;
 
-            public UploadBlobs(string roleName, CloudBlobClient client, int requestedIterations, int minSizeOfBlob, RandomTestData testDataSource)
-                : base(roleName, client, "Upload blobs", requestedIterations)
+            public UploadBlobs(Guid experimentId, string roleName, CloudBlobClient client, int requestedIterations, int minSizeOfBlob, RandomTestData testDataSource)
+                : base(experimentId, roleName, client, "Upload blobs", requestedIterations)
             {
                 this.container = this.client.GetContainerReference(Path.GetFileNameWithoutExtension(Path.GetRandomFileName()).ToLowerInvariant());
                 this.testDataSource = testDataSource;

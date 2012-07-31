@@ -43,7 +43,7 @@ namespace WorkerRole1
                 Thread.Sleep(30000);
                 monitor.Stop();
                 
-                XBlobExperiments experiment = new XBlobExperiments(this.benchmarkAccount.CreateCloudBlobClient(), 1, 10, 100 * 1024);
+                XBlobExperiments experiment = new XBlobExperiments(Guid.NewGuid(), this.benchmarkAccount.CreateCloudBlobClient(), 1, 10, 100 * 1024);
                 
                 IEnumerable<ExperimentResult> results = experiment.Run();
                 Trace.TraceInformation("Got results from experiment batch '{0}' at {1}", count++, DateTime.UtcNow);

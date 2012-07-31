@@ -6,3 +6,5 @@ TestResults/
 *.suo
 *.user
 *.build.csdef
+
+*.vsmdi

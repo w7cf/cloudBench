@@ -10,35 +10,35 @@ namespace BenchLib
     // and Knuth: The Art of Computer Programming, volume 2, 3rd ed. p 232
     public class RunningStatistics
     {
-        long samplesCount;
+        long count;
         double squaredMean;
         double mean;
         double min = double.MaxValue;
         double max = double.MinValue;
 
-        public long SamplesCount
+        public long Count
         {
-            get { return this.samplesCount; }
+            get { return this.count; }
         }
 
         public double Mean
         {
-            get { return (SamplesCount > 0) ? this.mean : 0.0; }
+            get { return (Count > 0) ? this.mean : 0.0; }
         }
 
         public double Min
         {
-            get { return (SamplesCount > 0) ? this.min : 0.0; }
+            get { return (Count > 0) ? this.min : 0.0; }
         }
 
         public double Max
         {
-            get { return (SamplesCount > 0) ? this.max : 0.0; }
+            get { return (Count > 0) ? this.max : 0.0; }
         }
 
         public double Variance
         {
-            get { return (SamplesCount > 1) ? this.squaredMean / (SamplesCount - 1) : 0.0; }
+            get { return (Count > 1) ? this.squaredMean / (Count - 1) : 0.0; }
         }
 
         public double StdDev
@@ -48,21 +48,21 @@ namespace BenchLib
 
         public void Clear()
         {
-            this.samplesCount = 0;
+            this.count = 0;
             this.mean = 0.0;
             this.squaredMean = 0.0;
         }
 
         public void AddSample(double x)
         {
-            this.samplesCount++;
-            if (this.samplesCount == 1)
+            this.count++;
+            if (this.count == 1)
             {
                 this.mean = x;
             }
             else
             {
-                double newMean = this.mean + (x - this.mean) / this.samplesCount;
+                double newMean = this.mean + (x - this.mean) / this.count;
                 this.squaredMean = this.squaredMean + (x - this.mean) * (x - newMean);
                 this.mean = newMean;
             }

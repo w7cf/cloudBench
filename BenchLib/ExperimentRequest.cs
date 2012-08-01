@@ -16,8 +16,11 @@ namespace BenchLib
             Completed,
         }
 
+        public Guid ExperimentId { get { return new Guid(RowKey); } }
         public string ExperimentName { get { return PartitionKey; } }
+        public int NumberOfThreads { get; set; }
         public int RequestedIterations { get; set; }
+        public long MinDataSize { get; set; }
         public State CurrentState { get; set; }
 
         public ExperimentRequest(Guid experimentId, string experimentName)

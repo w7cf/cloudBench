@@ -11,7 +11,7 @@ namespace BenchLib
     using Microsoft.WindowsAzure.StorageClient;
     using System.IO;
 
-    public class XStoreExperiment : Experiment
+    public abstract class XStoreExperiment : Experiment
     {
         protected readonly string roleName;
         protected readonly CloudBlobClient client;
@@ -28,11 +28,6 @@ namespace BenchLib
                 RetryPolicy = TrackedPolicy,
                 Timeout = TimeSpan.FromMinutes(5),
             };
-        }
-
-        protected override double RunSingleIteration(int currentIteration)
-        {
-            throw new NotImplementedException();
         }
 
         ShouldRetry TrackedPolicy()

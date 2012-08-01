@@ -1,5 +1,5 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
-namespace WorkerRole1
+namespace BenchWorker
 {
     using System;
     using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace WorkerRole1
             // This is a sample worker implementation. Replace with your logic.
             Trace.WriteLine("WorkerRole1 entry point called", "Information");
 
-            ExperimentRunner runner = new ExperimentRunner();
+            ExperimentRunner runner = new ExperimentRunner(new CloudExperimentRepo(), new CloudExperimentFactory());
             //runner.Start();
         }
 

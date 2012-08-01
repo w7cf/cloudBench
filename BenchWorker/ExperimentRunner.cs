@@ -1,5 +1,5 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
-namespace WorkerRole1
+namespace BenchWorker
 {
     using System;
     using System.Collections.Generic;
@@ -14,13 +14,13 @@ namespace WorkerRole1
 
     class ExperimentRunner
     {
-        readonly CloudStorageAccount reportAccount;
-        readonly CloudStorageAccount benchmarkAccount;
+        readonly IExperimentRepo ExperimentRepo;
+        readonly IExperimentFactory ExperimentFactory;
 
-        public ExperimentRunner()
+        public ExperimentRunner(IExperimentRepo experimentRepo, IExperimentFactory experimentFactory)
         {
-            this.reportAccount = CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("ReportStorage"));
-            this.benchmarkAccount = CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("BenchmarkStorage"));
+            ExperimentRepo = experimentRepo;
+            ExperimentFactory = experimentFactory;
         }
 
         public void Start()
@@ -38,15 +38,16 @@ namespace WorkerRole1
             while (true)
             {
                 Trace.TraceInformation("Start experiment batch '{0}' at {1}", count++, DateTime.UtcNow);
-                BenchmarkMonitor monitor = new BenchmarkMonitor();
-                monitor.Start();
-                Thread.Sleep(30000);
-                monitor.Stop();
-                
-                XBlobExperiments experiment = new XBlobExperiments(Guid.NewGuid(), this.benchmarkAccount.CreateCloudBlobClient(), 1, 10, 100 * 1024);
-                
+
+                ExperimentRequest request = ExperimentRepo.GetPendingRequests().First();
+
+                ExperimentContainer experiment = new ExperimentContainer(request, ExperimentFactory);
+
                 IEnumerable<ExperimentResult> results = experiment.Run();
+
                 Trace.TraceInformation("Got results from experiment batch '{0}' at {1}", count++, DateTime.UtcNow);
+
+                ExperimentRepo.AddResults(request.ExperimentId, results);
             }
         }
     }

@@ -53,7 +53,10 @@
     <Compile Include="ExperimentRequest.cs" />
     <Compile Include="ExperimentResult.cs" />
     <Compile Include="ExperimentStatus.cs" />
+    <Compile Include="IExperimentFactory.cs" />
+    <Compile Include="IExperimentRepo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomBlobData.cs" />
     <Compile Include="RunningStatistics.cs" />
     <Compile Include="XStoreExperiment.cs" />
   </ItemGroup>

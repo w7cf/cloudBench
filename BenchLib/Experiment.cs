@@ -7,12 +7,13 @@ namespace BenchLib
     using System.Text;
     using System.Diagnostics;
     using System.Globalization;
-using System.Threading;
+    using System.Threading;
 
     public abstract class Experiment
     {
         readonly Guid experimentId;
         readonly int requestedIterations;
+        readonly string instanceId;
         readonly ManualResetEvent requestCancel = new ManualResetEvent(false);
         readonly ManualResetEvent hasFinished = new ManualResetEvent(false);
         string title;
@@ -28,11 +29,12 @@ using System.Threading;
         public WaitHandle WaitHandle { get { return this.hasFinished; } }
 
 
-        public Experiment(Guid experimentId, string title, int requestedIterations)
+        public Experiment(Guid experimentId, string title, int requestedIterations, string instanceId)
         {
             this.experimentId = experimentId;
             this.title = title;
             this.requestedIterations = requestedIterations;
+            this.instanceId = instanceId;
         }
 
         public void Start()
@@ -98,7 +100,7 @@ using System.Threading;
                 }
                 totalDuration.Stop();
                 CleanupExperiment();
-                result = new ExperimentResult(this.experimentId, Title) {
+                result = new ExperimentResult(this.experimentId, this.instanceId) {
                     Title = Title,
                     Success = true, 
                     Started = started, 
@@ -113,7 +115,7 @@ using System.Threading;
             {
                 netDuration.Stop();
                 totalDuration.Stop();
-                result = new ExperimentResult(this.experimentId, Title)
+                result = new ExperimentResult(this.experimentId, this.instanceId)
                 {
                     Title = Title,
                     Success = false,

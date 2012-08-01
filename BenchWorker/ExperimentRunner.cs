@@ -3,22 +3,20 @@ namespace BenchWorker
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
-    using System.Text;
-    using Microsoft.WindowsAzure;
     using System.Threading;
     using BenchLib;
-    using System.Diagnostics;
-    using Microsoft.WindowsAzure.ServiceRuntime;
-    using Microsoft.WindowsAzure.StorageClient;
 
     class ExperimentRunner
     {
+        readonly string InstanceId;
         readonly IExperimentRepo ExperimentRepo;
         readonly IExperimentFactory ExperimentFactory;
 
-        public ExperimentRunner(IExperimentRepo experimentRepo, IExperimentFactory experimentFactory)
+        public ExperimentRunner(string instanceId, IExperimentRepo experimentRepo, IExperimentFactory experimentFactory)
         {
+            InstanceId = instanceId;
             ExperimentRepo = experimentRepo;
             ExperimentFactory = experimentFactory;
         }
@@ -33,21 +31,29 @@ namespace BenchWorker
 
         void DispatchExperiments()
         {
-            int count = 0;
-
             while (true)
             {
-                Trace.TraceInformation("Start experiment batch '{0}' at {1}", count++, DateTime.UtcNow);
+                IEnumerable<ExperimentRequest> requests = ExperimentRepo.GetPendingRequests();
+                if (requests.Any())
+                {
+                    ExperimentRequest request = requests.First();
+                    Guid experimentId = request.ExperimentId;
+                    Trace.TraceInformation("Start experiment batch '{0}' at {1}", experimentId, DateTime.UtcNow);
 
-                ExperimentRequest request = ExperimentRepo.GetPendingRequests().First();
+                    ExperimentContainer experiment = new ExperimentContainer(InstanceId, request, ExperimentFactory);
 
-                ExperimentContainer experiment = new ExperimentContainer(request, ExperimentFactory);
+                    ExperimentRepo.UpdateRequestState(experimentId, ExperimentRequest.State.Running);
+                    IEnumerable<ExperimentResult> results = experiment.Run();
+                    ExperimentRepo.UpdateRequestState(experimentId, ExperimentRequest.State.Completed);
 
-                IEnumerable<ExperimentResult> results = experiment.Run();
+                    Trace.TraceInformation("Got results from experiment batch '{0}' at {1}", experimentId, DateTime.UtcNow);
 
-                Trace.TraceInformation("Got results from experiment batch '{0}' at {1}", count++, DateTime.UtcNow);
-
-                ExperimentRepo.AddResults(request.ExperimentId, results);
+                    ExperimentRepo.AddResults(request.ExperimentId, results);
+                }
+                else
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(10));
+                }
             }
         }
     }

@@ -25,7 +25,7 @@ namespace LibTests
         public void HasCorrectStatus()
         {
             List<Step> tracker = new List<Step>();
-            MockExperiment experiment = new MockExperiment(tracker, "HasCorrectStatus", 1,
+            MockExperiment experiment = new MockExperiment(tracker, "HasCorrectStatus", 1, "Instance0",
                 (i) => 
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(1)); 
@@ -50,7 +50,7 @@ namespace LibTests
         public void HasValidResult()
         {
             List<Step> tracker = new List<Step>();
-            MockExperiment experiment = new MockExperiment(tracker, "HasValidResult", 2,
+            MockExperiment experiment = new MockExperiment(tracker, "HasValidResult", 2, "Instance0",
                 (i) =>
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(2));
@@ -87,7 +87,7 @@ namespace LibTests
             const string failureMessage = "Intentional experiment failure";
 
             List<Step> tracker = new List<Step>();
-            MockExperiment experiment = new MockExperiment(tracker, "ExperimentHasRightOrderingOfSteps", 1,
+            MockExperiment experiment = new MockExperiment(tracker, "ExperimentHasRightOrderingOfSteps", 1, "Instance0",
                 (i) =>
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(1));
@@ -110,7 +110,7 @@ namespace LibTests
         public void HasRightOrderingOfSteps()
         {
             List<Step> tracker = new List<Step>();
-            MockExperiment experiment = new MockExperiment(tracker, "ExperimentWithException", 2);
+            MockExperiment experiment = new MockExperiment(tracker, "ExperimentWithException", 2, "Instance0");
 
             experiment.Start();
             Assert.IsTrue(experiment.WaitForCompletion(TimeSpan.FromSeconds(20)), "experiment timed out");
@@ -154,8 +154,8 @@ namespace LibTests
             List<Step> tracker;
             Func<int, double> iteration;
 
-            public MockExperiment(List<Step> tracker, string title, int requestedIterations, Func<int,double> iteration = null)
-                : base(Guid.NewGuid(), title, requestedIterations)
+            public MockExperiment(List<Step> tracker, string title, int requestedIterations, string instanceId, Func<int, double> iteration = null)
+                : base(Guid.NewGuid(), title, requestedIterations, instanceId)
             {
                 this.tracker = tracker;
                 this.iteration = iteration;

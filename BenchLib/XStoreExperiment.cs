@@ -13,15 +13,15 @@ namespace BenchLib
 
     public abstract class XStoreExperiment : Experiment
     {
-        protected readonly string roleName;
+        protected readonly string instanceId;
         protected readonly CloudBlobClient client;
         protected readonly BlobRequestOptions requestOptions;
         public int TotalRetries { get; private set; }
 
-        public XStoreExperiment(Guid experimentId, string roleName, CloudBlobClient client, string title, int requestedIterations)
-            : base(experimentId, title, requestedIterations)
+        public XStoreExperiment(Guid experimentId, CloudBlobClient client, string title, int requestedIterations, string instanceId)
+            : base(experimentId, title, requestedIterations, instanceId)
         {
-            this.roleName = roleName;
+            this.instanceId = instanceId;
             this.client = client;
             this.requestOptions = new BlobRequestOptions
             {

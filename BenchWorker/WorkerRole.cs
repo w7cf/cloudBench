@@ -25,7 +25,7 @@ namespace BenchWorker
             // This is a sample worker implementation. Replace with your logic.
             Trace.WriteLine("WorkerRole1 entry point called", "Information");
 
-            ExperimentRunner runner = new ExperimentRunner(new CloudExperimentRepo(), new CloudExperimentFactory());
+            ExperimentRunner runner = new ExperimentRunner(RoleEnvironment.CurrentRoleInstance.Id, new CloudExperimentRepo(), new CloudExperimentFactory());
             //runner.Start();
         }
 

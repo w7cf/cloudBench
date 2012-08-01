@@ -3,30 +3,22 @@ namespace BenchWorker
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using BenchLib;
-    using Microsoft.WindowsAzure;
-    using Microsoft.WindowsAzure.Diagnostics;
-    using Microsoft.WindowsAzure.ServiceRuntime;
-    using Microsoft.WindowsAzure.StorageClient;
-    using System.IO;
     using System.Threading;
+    using BenchLib;
 
     class ExperimentContainer
     {
+        readonly string InstanceId;
         readonly ExperimentRequest ExperimentRequest;
         readonly RandomBlobData testDataSource;
         List<Experiment> experiments = new List<Experiment>();
         List<string> testFiles = new List<string>();
 
-        public string RoleName { get; private set; }
-
-        public ExperimentContainer(ExperimentRequest request, IExperimentFactory experimentFactory)
+        public ExperimentContainer(string instanceId, ExperimentRequest request, IExperimentFactory experimentFactory)
         {
             this.ExperimentRequest = request;
             this.testDataSource = new RandomBlobData(request.MinDataSize);
-            RoleName = RoleEnvironment.CurrentRoleInstance.Id;
+            InstanceId = instanceId;
             for (int i = 0; i < request.NumberOfThreads; i++)
             {
                 this.experiments.Add(experimentFactory.CreateExperiment(request));
@@ -57,6 +49,5 @@ namespace BenchWorker
             }
             return results;
         }
-
     }
 }

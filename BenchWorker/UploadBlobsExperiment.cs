@@ -18,8 +18,8 @@ namespace BenchWorker
         readonly CloudBlobContainer container;
         readonly RandomBlobData blobDatasource;
 
-        public UploadBlobsExperiment(string roleName, CloudBlobClient client, ExperimentRequest request, RandomBlobData blobDatasource)
-            : base(request.ExperimentId, roleName, client, "Upload blobs", request.RequestedIterations)
+        public UploadBlobsExperiment(string instanceId, CloudBlobClient client, ExperimentRequest request, RandomBlobData blobDatasource)
+            : base(request.ExperimentId, client, "Upload blobs", request.RequestedIterations, instanceId)
         {
             this.container = this.client.GetContainerReference(Path.GetFileNameWithoutExtension(Path.GetRandomFileName()).ToLowerInvariant());
             this.blobDatasource = blobDatasource;

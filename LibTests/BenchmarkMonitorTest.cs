@@ -1,10 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using BenchLib;
+﻿using System;
 using System.Threading;
+using BenchLib;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LibTests
 {

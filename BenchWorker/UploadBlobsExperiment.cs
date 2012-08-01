@@ -1,17 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 namespace BenchWorker
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using BenchLib;
-    using Microsoft.WindowsAzure;
-    using Microsoft.WindowsAzure.Diagnostics;
-    using Microsoft.WindowsAzure.ServiceRuntime;
-    using Microsoft.WindowsAzure.StorageClient;
     using System.IO;
-    using System.Threading;
+    using BenchLib;
+    using Microsoft.WindowsAzure.StorageClient;
 
     class UploadBlobsExperiment : XStoreExperiment
     {

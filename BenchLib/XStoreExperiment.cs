@@ -2,14 +2,7 @@
 namespace BenchLib
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using Microsoft.WindowsAzure;
-    //using Microsoft.WindowsAzure.Diagnostics;
-    //using Microsoft.WindowsAzure.ServiceRuntime;
     using Microsoft.WindowsAzure.StorageClient;
-    using System.IO;
 
     public abstract class XStoreExperiment : Experiment
     {

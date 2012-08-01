@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
 namespace BenchLib
 {
+    using System;
+
     // calculates running mean & stdDev, discarding samples
     // see http://www.johndcook.com/standard_deviation.html
     // and Knuth: The Art of Computer Programming, volume 2, 3rd ed. p 232

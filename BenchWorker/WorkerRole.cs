@@ -6,6 +6,7 @@ namespace BenchWorker
     using System.Net;
     using Microsoft.WindowsAzure.Diagnostics;
     using Microsoft.WindowsAzure.ServiceRuntime;
+    using BenchLib;
 
     public class WorkerRole : RoleEntryPoint
     {

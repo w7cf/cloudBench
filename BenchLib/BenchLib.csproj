@@ -50,8 +50,10 @@
   <ItemGroup>
     <Compile Include="BenchmarkMonitor.cs" />
     <Compile Include="Experiment.cs" />
+    <Compile Include="ExperimentContainer.cs" />
     <Compile Include="ExperimentRequest.cs" />
     <Compile Include="ExperimentResult.cs" />
+    <Compile Include="ExperimentRunner.cs" />
     <Compile Include="ExperimentStatus.cs" />
     <Compile Include="IExperimentFactory.cs" />
     <Compile Include="IExperimentRepo.cs" />

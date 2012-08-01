@@ -1,5 +1,5 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
-namespace BenchWorker
+namespace BenchLib
 {
     using System;
     using System.Collections.Generic;
@@ -8,7 +8,7 @@ namespace BenchWorker
     using System.Threading;
     using BenchLib;
 
-    class ExperimentRunner
+    public class ExperimentRunner
     {
         readonly string InstanceId;
         readonly IExperimentRepo ExperimentRepo;

@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation.  All rights reserved.
-namespace BenchWorker
+namespace BenchLib
 {
     using System;
     using System.Collections.Generic;
     using System.Threading;
     using BenchLib;
 
-    class ExperimentContainer
+    public class ExperimentContainer
     {
         readonly string InstanceId;
         readonly ExperimentRequest ExperimentRequest;

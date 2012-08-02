@@ -37,7 +37,7 @@ namespace BenchLib
             foreach (Experiment experiment in this.experiments)
             {
                 experiment.Start();
-                waitHandles.Add(experiment.WaitHandle);
+                waitHandles.Add(experiment.HasFinishedEvent);
             }
             bool finishedInTime = WaitHandle.WaitAll(waitHandles.ToArray(), TimeSpan.FromMinutes(60));
             monitor.Stop();

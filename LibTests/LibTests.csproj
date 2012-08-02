@@ -57,7 +57,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BenchmarkMonitorTest.cs" />
+    <Compile Include="ExperimentRunnerTest.cs" />
     <Compile Include="ExperimentTest.cs" />
+    <Compile Include="MockExperiment.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StatisticsTest.cs" />
   </ItemGroup>

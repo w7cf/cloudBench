@@ -11,15 +11,6 @@ namespace LibTests
     [TestClass]
     public class ExperimentTest
     {
-        enum Step
-        {
-            PrepareExperiment,
-            PrepareIteration,
-            RunSingleIteration,
-            CleanupIteration,
-            CleanupExperiment,
-        }
-
         [TestMethod]
         public void HasCorrectStatus()
         {
@@ -35,7 +26,7 @@ namespace LibTests
             Assert.IsFalse(experiment.IsRunning);
             Assert.AreEqual(1, experiment.RequestedIterations);
             Assert.IsNull(experiment.Result);
-            Assert.IsNotNull(experiment.WaitHandle);
+            Assert.IsNotNull(experiment.HasFinishedEvent);
 
             experiment.Start();
 
@@ -146,49 +137,6 @@ namespace LibTests
             }
             Assert.AreEqual(expectedLength, actualLength,
                 string.Format("expected and actual should have same length: expectedLength={0}, actualLength={1}", expectedLength, actualLength));
-        }
-
-        class MockExperiment : Experiment
-        {
-            List<Step> tracker;
-            Func<int, double> iteration;
-
-            public MockExperiment(List<Step> tracker, string title, int requestedIterations, string instanceId, Func<int, double> iteration = null)
-                : base(Guid.NewGuid(), title, requestedIterations, instanceId)
-            {
-                this.tracker = tracker;
-                this.iteration = iteration;
-            }
-
-            protected override double RunSingleIteration(int currentIteration)
-            {
-                this.tracker.Add(Step.RunSingleIteration);
-                if (this.iteration != null)
-                {
-                    return this.iteration(currentIteration);
-                }
-                return 42.0;
-            }
-
-            protected override void PrepareExperiment()
-            {
-                this.tracker.Add(Step.PrepareExperiment);
-            }
-
-            protected override void PrepareIteration(int currentIteration)
-            {
-                this.tracker.Add(Step.PrepareIteration);
-            }
-
-            protected override void CleanupIteration(int currentIteration)
-            {
-                this.tracker.Add(Step.CleanupIteration);
-            }
-
-            protected override void CleanupExperiment()
-            {
-                this.tracker.Add(Step.CleanupExperiment);
-            }
         }
     }
 }

@@ -7,25 +7,19 @@ namespace BenchLib
     using System.Text;
     using System.Threading;
 
-    public abstract class Experiment
+    public abstract class Experiment : AsyncTask
     {
         readonly Guid experimentId;
         readonly int requestedIterations;
         readonly string instanceId;
-        readonly ManualResetEvent requestCancel = new ManualResetEvent(false);
-        readonly ManualResetEvent hasFinished = new ManualResetEvent(false);
         string title;
         ExperimentResult result;
-        bool isRunning;
         Thread thread;
 
         public int RequestedIterations { get { return this.requestedIterations; } }
         public string Title { get { return this.title; } }
 
         public ExperimentResult Result { get { return this.result; } }
-        public bool IsRunning { get { return this.isRunning; } }
-        public WaitHandle WaitHandle { get { return this.hasFinished; } }
-
 
         public Experiment(Guid experimentId, string title, int requestedIterations, string instanceId)
         {
@@ -35,40 +29,21 @@ namespace BenchLib
             this.instanceId = instanceId;
         }
 
-        public void Start()
+        protected override void OnStart()
         {
             if (IsRunning)
             {
                 throw new InvalidOperationException("An experiment is already running.");
             }
-            this.requestCancel.Reset();
             this.thread = new Thread(RunCore);
             this.thread.Name = "Experiment: " + Title;
             this.thread.Start();
-            this.isRunning = true;
+            base.OnStart();
         }
 
-        public void Cancel()
+        protected override bool OnWaitForCompletion(TimeSpan timeout)
         {
-            if (!IsRunning)
-            {
-                return;
-            }
-            this.requestCancel.Set();
-        }
-
-        public bool WaitForCompletion()
-        {
-            return WaitForCompletion(TimeSpan.FromMilliseconds(-1));    // -1 msec -> infinite time out
-        }
-
-        public bool WaitForCompletion(TimeSpan timeout)
-        {
-            if (!IsRunning)
-            {
-                return false;
-            }
-            bool finishedInTime = this.hasFinished.WaitOne(timeout);
+            bool finishedInTime = base.OnWaitForCompletion(timeout);
             this.thread = null;
             return finishedInTime;
         }
@@ -99,6 +74,7 @@ namespace BenchLib
                 totalDuration.Stop();
                 CleanupExperiment();
                 result = new ExperimentResult(this.experimentId, this.instanceId) {
+                    ThreadId = Thread.CurrentThread.ManagedThreadId,
                     Title = Title,
                     Success = true, 
                     Started = started, 
@@ -115,6 +91,7 @@ namespace BenchLib
                 totalDuration.Stop();
                 result = new ExperimentResult(this.experimentId, this.instanceId)
                 {
+                    ThreadId = Thread.CurrentThread.ManagedThreadId,
                     Title = Title,
                     Success = false,
                     Started = started,
@@ -128,9 +105,8 @@ namespace BenchLib
             }
             finally
             {
-                this.isRunning = false;
                 this.result = result;
-                this.hasFinished.Set();
+                base.OnTaskFinished();
             }
         }
 

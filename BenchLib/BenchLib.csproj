@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncTask.cs" />
     <Compile Include="BenchmarkMonitor.cs" />
     <Compile Include="Experiment.cs" />
     <Compile Include="ExperimentContainer.cs" />

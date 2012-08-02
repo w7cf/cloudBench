@@ -9,6 +9,7 @@ namespace BenchLib
         public string InstanceId { get { return PartitionKey; } }
         public string Title { get; set; }
         public bool Success { get; set; }
+        public int ThreadId { get; set; }
         public DateTime Started { get; set; }
         public TimeSpan TotalDuration { get; set; }
         public TimeSpan NetDuration { get; set; }

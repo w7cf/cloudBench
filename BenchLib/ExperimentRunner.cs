@@ -8,11 +8,13 @@ namespace BenchLib
     using System.Threading;
     using BenchLib;
 
-    public class ExperimentRunner
+    public class ExperimentRunner : AsyncTask
     {
         readonly string InstanceId;
         readonly IExperimentRepo ExperimentRepo;
         readonly IExperimentFactory ExperimentFactory;
+        readonly ManualResetEvent requestCancel = new ManualResetEvent(false);
+        Thread runner;
 
         public ExperimentRunner(string instanceId, IExperimentRepo experimentRepo, IExperimentFactory experimentFactory)
         {
@@ -21,12 +23,16 @@ namespace BenchLib
             ExperimentFactory = experimentFactory;
         }
 
-        public void Start()
+        protected override void OnStart()
         {
-            Thread runner = new Thread(DispatchExperiments);
-            runner.Name = "ExperimentRunner";
-            runner.Start();
-            runner.Join();
+            if (IsRunning)
+            {
+                throw new InvalidOperationException("An experiment is already running.");
+            }
+            this.runner = new Thread(DispatchExperiments);
+            this.runner.Name = "ExperimentRunner";
+            this.runner.Start();
+            base.OnStart();
         }
 
         void DispatchExperiments()
@@ -34,16 +40,16 @@ namespace BenchLib
             while (true)
             {
                 IEnumerable<ExperimentRequest> requests = ExperimentRepo.GetPendingRequests();
-                if (requests.Any())
+                if (!WaitForCancelEvent(TimeSpan.FromTicks(1)) && requests.Any())
                 {
                     ExperimentRequest request = requests.First();
                     Guid experimentId = request.ExperimentId;
                     Trace.TraceInformation("Start experiment batch '{0}' at {1}", experimentId, DateTime.UtcNow);
 
-                    ExperimentContainer experiment = new ExperimentContainer(InstanceId, request, ExperimentFactory);
+                    ExperimentContainer container = new ExperimentContainer(InstanceId, request, ExperimentFactory);
 
                     ExperimentRepo.UpdateRequestState(experimentId, ExperimentRequest.State.Running);
-                    IEnumerable<ExperimentResult> results = experiment.Run();
+                    IEnumerable<ExperimentResult> results = container.Run();
                     ExperimentRepo.UpdateRequestState(experimentId, ExperimentRequest.State.Completed);
 
                     Trace.TraceInformation("Got results from experiment batch '{0}' at {1}", experimentId, DateTime.UtcNow);
@@ -52,7 +58,12 @@ namespace BenchLib
                 }
                 else
                 {
-                    Thread.Sleep(TimeSpan.FromSeconds(10));
+                    if (WaitForCancelEvent(TimeSpan.FromSeconds(5)))
+                    {
+                        // done, exit thread
+                        OnTaskFinished();
+                        return;
+                    }
                 }
             }
         }
